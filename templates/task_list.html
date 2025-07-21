@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+Task List
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Task List</h2>
+
+    {% if user.is_superuser %}
+        <a href="{% url 'create_task' %}" class="btn btn-primary">+ Create Task</a>
+    {% endif %}
+</div>
+
+<table class="table table-bordered table-hover">
+    <thead class="table-dark">
+        <tr>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Assigned To</th>
+            <th>Completed</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for task in tasks %}
+        <tr>
+            <td>{{ task.title }}</td>
+            <td>{{ task.description }}</td>
+            <td>{{ task.assigned_to.username }}</td>
+            <td>
+                {% if task.completed %}
+                    <span class="badge bg-success">Yes</span>
+                {% else %}
+                    <span class="badge bg-danger">No</span>
+                {% endif %}
+            </td>
+            <td>
+                {% if not task.completed %}
+                    {% if user.is_superuser or task.assigned_to == user %}
+                    <form method="post" action="{% url 'mark_completed' task.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-success">Mark Completed</button>
+                    </form>
+                    {% endif %}
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
