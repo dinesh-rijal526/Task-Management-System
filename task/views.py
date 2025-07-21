@@ -34,9 +34,10 @@ def create_task(request):
 def mark_task_completed(request, task_id):
     task = get_object_or_404(TaskModel, id=task_id)
 
-    if request.method == "POST" and request.user == task.assigned_to or request.user.is_superuser:
-        task.completed = True
-        task.save()
+    if request.method == "POST":
+        if request.user == task.assigned_to or request.user.is_superuser:
+            task.completed = True
+            task.save()
 
     return redirect('task_list')
 
